@@ -3,9 +3,10 @@ package com.davidcrespo.wereables
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.davidcrespo.wereables.models.HealthConnectAvailability
-import com.davidcrespo.wereables.models.HeartRateLatestResult
-import com.davidcrespo.wereables.models.StepsTodayResult
+import com.davidcrespo.wereables.healthConnect.HealthConnectRepository
+import com.davidcrespo.wereables.healthConnect.models.HealthConnectAvailability
+import com.davidcrespo.wereables.healthConnect.models.HeartRateLatestResult
+import com.davidcrespo.wereables.healthConnect.models.StepsTodayResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

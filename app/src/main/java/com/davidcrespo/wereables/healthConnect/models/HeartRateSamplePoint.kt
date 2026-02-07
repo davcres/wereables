@@ -1,4 +1,4 @@
-package com.davidcrespo.wereables.models
+package com.davidcrespo.wereables.healthConnect.models
 
 import java.time.Instant
 

@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.davidcrespo.wereables.models.HealthConnectAvailability
-import com.davidcrespo.wereables.models.HeartRateLatestResult
-import com.davidcrespo.wereables.models.StepsTodayResult
+import com.davidcrespo.wereables.healthConnect.models.HealthConnectAvailability
+import com.davidcrespo.wereables.healthConnect.models.HeartRateLatestResult
+import com.davidcrespo.wereables.healthConnect.models.StepsTodayResult
 import com.davidcrespo.wereables.ui.theme.WereablesTheme
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

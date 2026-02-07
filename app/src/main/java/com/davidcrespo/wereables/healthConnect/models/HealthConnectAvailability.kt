@@ -1,4 +1,4 @@
-package com.davidcrespo.wereables.models
+package com.davidcrespo.wereables.healthConnect.models
 
 sealed class HealthConnectAvailability {
     data object Available : HealthConnectAvailability()
