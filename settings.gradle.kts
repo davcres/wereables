@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Wereables"
+rootProject.name = "BLE Scanner & Simulator"
 include(":app")
  
