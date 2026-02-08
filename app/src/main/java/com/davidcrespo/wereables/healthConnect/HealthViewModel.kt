@@ -1,24 +1,11 @@
-package com.davidcrespo.wereables
+package com.davidcrespo.wereables.healthConnect
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.davidcrespo.wereables.healthConnect.HealthConnectRepository
-import com.davidcrespo.wereables.healthConnect.models.HealthConnectAvailability
-import com.davidcrespo.wereables.healthConnect.models.HeartRateLatestResult
-import com.davidcrespo.wereables.healthConnect.models.StepsTodayResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
-data class HealthUiState(
-    val availability: HealthConnectAvailability = HealthConnectAvailability.Unavailable,
-    val hasPermissions: Boolean = false,
-    val todaySteps: StepsTodayResult? = null,
-    val latestHeartRate: HeartRateLatestResult? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
 
 class HealthViewModel(app: Application) : AndroidViewModel(app) {
 
