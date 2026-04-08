@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.davidcrespo.wereables.ble.scanner.BleScanViewModel
 import com.davidcrespo.wereables.ble.scanner.ThermometerBleScanScreen
 import com.davidcrespo.wereables.ble.emulator.ThermometerBleServerScreen
@@ -31,6 +32,7 @@ import com.davidcrespo.wereables.ui.theme.WereablesTheme
 
 class MainActivity : ComponentActivity() {
 
+    private val mainViewModel: MainViewModel by viewModels()
     private val healthViewModel: HealthViewModel by viewModels()
     private val bleScanViewModel: BleScanViewModel by viewModels()
 
@@ -41,6 +43,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             WereablesTheme {
                 var selectedScreen by remember { mutableStateOf(0) }
+                // Obtenemos el estado de Remote Config aunque por ahora solo lo recuperamos al inicio
+                val isConfigReady by mainViewModel.isConfigReady.collectAsStateWithLifecycle()
 
                 Scaffold(
                     bottomBar = {
