@@ -6,6 +6,7 @@ import android.bluetooth.*
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.davidcrespo.wereables.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,7 @@ class BleScanViewModel(
                         _ui.value = _ui.value.copy(devices = sorted, scanning = true, error = null)
                     }
             }.onFailure { e ->
-                _ui.value = _ui.value.copy(scanning = false, error = e.message ?: "Scan error")
+                _ui.value = _ui.value.copy(scanning = false, error = e.message ?: getApplication<Application>().getString(R.string.scan_error))
                 scanJob = null
             }
         }
@@ -148,8 +149,9 @@ class BleScanViewModel(
     private fun parseValue(address: String, characteristic: BluetoothGattCharacteristic, rawValue: ByteArray? = null) {
         val value = rawValue ?: characteristic.value
         val uuid = characteristic.uuid.toString().uppercase()
+        val context = getApplication<Application>()
         
-        var parsedText = "Data..."
+        var parsedText = context.getString(R.string.data_label)
 
         try {
             when {
@@ -157,7 +159,7 @@ class BleScanViewModel(
                     // * Byte 0: Flags (Indica si es Celsius o Fahrenheit).
                     // * Byte 1-4: Temperatura (El valor que nos interesa).
                     val temp = parseFloat32(value, 1)
-                    parsedText = "%.1f °C".format(temp)
+                    parsedText = context.getString(R.string.temp_format, temp)
                 }
                 uuid.contains("2A37") -> { // HR
                     // * Byte 0: Flags (Indica formato UINT8 o UINT16).
@@ -165,7 +167,7 @@ class BleScanViewModel(
                     val flags = value[0].toInt()
                     val format = if ((flags and 1) != 0) BluetoothGattCharacteristic.FORMAT_UINT16 else BluetoothGattCharacteristic.FORMAT_UINT8
                     val hr = characteristic.getIntValue(format, 1)
-                    parsedText = "$hr bpm"
+                    parsedText = context.getString(R.string.hr_format, hr)
                 }
                 uuid.contains("2A35") -> { // BP
                     // * Byte 0: Flags (Unidades kPa/mmHg, etc.).
@@ -174,7 +176,7 @@ class BleScanViewModel(
                     // * Byte 5-6: Presión Arterial Media (MAP).
                     val sys = parseSFloat(value, 1)
                     val dia = parseSFloat(value, 3) // 1byte flags + 2byte SFloat
-                    parsedText = "BP: %.0f/%.0f".format(sys, dia)
+                    parsedText = context.getString(R.string.bp_label, sys, dia)
                 }
                 uuid.contains("2A18") -> { // Glucose
                     // * Byte 0: Flags (1 byte).
@@ -183,7 +185,7 @@ class BleScanViewModel(
                     // * Byte 10-11: Offset de Tiempo (2 bytes).
                     // * Byte 12-13: Concentración de Glucosa (El valor que queremos).
                     val conc = parseSFloat(value, 12)
-                    parsedText = "Gluc: %.0f mg/dL".format(conc)
+                    parsedText = context.getString(R.string.gluc_label, conc)
                 }
                 uuid.contains("2A5F") -> { // PulseOx
                     // * Byte 0: Flags.
@@ -191,11 +193,11 @@ class BleScanViewModel(
                     // * Byte 3-4: Pulso (PR). -> Empieza en offset 3 (1 byte de flags + 2 bytes de SpO2).
                     val spo2 = parseSFloat(value, 1)
                     val pr = parseSFloat(value, 3)
-                    parsedText = "SpO2: %.0f%% | PR: %.0f".format(spo2, pr)
+                    parsedText = context.getString(R.string.spo2_pr_label, spo2, pr)
                 }
             }
         } catch (e: Exception) {
-            parsedText = "Parse Err: ${value.joinToString { "%02x".format(it) }}"
+            parsedText = context.getString(R.string.parse_error_prefix, value.joinToString { "%02x".format(it) })
         }
 
         val newMap = _ui.value.deviceValues.toMutableMap()

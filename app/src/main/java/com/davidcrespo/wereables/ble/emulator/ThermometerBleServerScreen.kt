@@ -14,11 +14,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.davidcrespo.wereables.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,39 +53,39 @@ fun ThermometerBleServerScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Text("Emulador Multi-Dispositivo", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.emulator_title), style = MaterialTheme.typography.headlineSmall)
 
         if (!hasPermissions) {
-            Button(onClick = { launcher.launch(requiredPermissions) }) { Text("Conceder Permisos") }
+            Button(onClick = { launcher.launch(requiredPermissions) }) { Text(stringResource(R.string.grant_permissions)) }
         } else {
             // Profile Selector
             if (!isAdvertising) {
                 var expanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
                     OutlinedTextField(
-                        value = profile.displayName,
+                        value = stringResource(profile.displayNameResId),
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Tipo de Dispositivo") },
+                        label = { Text(stringResource(R.string.device_type)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier.menuAnchor().fillMaxWidth()
                     )
                     ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        BleProfile.values().forEach { p ->
+                        BleProfile.entries.forEach { p ->
                             DropdownMenuItem(
-                                text = { Text(p.displayName) },
+                                text = { Text(stringResource(p.displayNameResId)) },
                                 onClick = { vm.setProfile(p); expanded = false }
                             )
                         }
                     }
                 }
             } else {
-                 Text("Emulando: ${profile.displayName}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                 Text(stringResource(R.string.emulating, stringResource(profile.displayNameResId)), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             }
 
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(if (isAdvertising) "ANUNCIANDO" else "DETENIDO")
+                    Text(if (isAdvertising) stringResource(R.string.advertising) else stringResource(R.string.stopped))
                     Switch(checked = isAdvertising, onCheckedChange = { vm.toggleServer(it) })
                 }
             }
@@ -92,21 +94,21 @@ fun ThermometerBleServerScreen() {
             
             // Dynamic Controls
             if (isAdvertising || true) { // Show controls always for preview
-                Text("Controles (Ajustar y notificar)", style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.controls_label), style = MaterialTheme.typography.labelLarge)
                 
                 when (profile) {
                     BleProfile.THERMOMETER -> {
-                        SliderControl("Temperatura", vm.temperature, 30f..45f, "%.1f °C") { vm.updateValues() }
+                        SliderControl(stringResource(R.string.temperature), vm.temperature, 30f..45f, "%.1f °C") { vm.updateValues() }
                     }
                     BleProfile.HEART_RATE -> {
                         SliderControl("BPM", vm.heartRate, 40f..200f, "%.0f bpm") { vm.updateValues() }
                     }
                     BleProfile.BLOOD_PRESSURE -> {
-                        SliderControl("Sistólica", vm.systolic, 80f..180f, "%.0f mmHg") { vm.updateValues() }
-                        SliderControl("Diastólica", vm.diastolic, 50f..120f, "%.0f mmHg") { vm.updateValues() }
+                        SliderControl(stringResource(R.string.systolic), vm.systolic, 80f..180f, "%.0f mmHg") { vm.updateValues() }
+                        SliderControl(stringResource(R.string.diastolic), vm.diastolic, 50f..120f, "%.0f mmHg") { vm.updateValues() }
                     }
                     BleProfile.GLUCOSE -> {
-                        SliderControl("Glucosa", vm.glucose, 50f..300f, "%.0f mg/dL") { vm.updateValues() }
+                        SliderControl(stringResource(R.string.glucose), vm.glucose, 50f..300f, "%.0f mg/dL") { vm.updateValues() }
                     }
                     BleProfile.PULSE_OXIMETER -> {
                         SliderControl("SpO2", vm.spo2, 80f..100f, "%.0f %%") { vm.updateValues() }
@@ -115,7 +117,7 @@ fun ThermometerBleServerScreen() {
                 }
                 
                 Button(onClick = { vm.updateValues() }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Forzar Envío de Datos")
+                    Text(stringResource(R.string.force_send_data))
                 }
             }
         }

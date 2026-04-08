@@ -21,10 +21,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.davidcrespo.wereables.R
 import com.davidcrespo.wereables.ble.scanner.BleScanResult
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +77,7 @@ fun ThermometerBleScanScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Health Devices Scanner") },
+                title = { Text(stringResource(R.string.scanner_title)) },
                 actions = {
                     IconButton(
                         onClick = {
@@ -128,7 +130,7 @@ fun ThermometerBleScanScreen(
             )
 
             state.error?.let { msg ->
-                AssistChip(onClick = { /* noop */ }, label = { Text("Error: $msg") })
+                AssistChip(onClick = { /* noop */ }, label = { Text(stringResource(R.string.error_prefix, msg)) })
             }
 
             if (state.scanning) {
@@ -156,37 +158,37 @@ private fun StatusCard(
 ) {
     Card {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Estado", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.status_label), style = MaterialTheme.typography.titleMedium)
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 AssistChip(
                     onClick = {},
-                    label = { Text(if (hasPermissions) "Permisos OK" else "Faltan permisos") }
+                    label = { Text(if (hasPermissions) stringResource(R.string.permissions_ok) else stringResource(R.string.missing_permissions)) }
                 )
                 AssistChip(
                     onClick = {},
-                    label = { Text(if (btEnabled) "Bluetooth ON" else "Bluetooth OFF") }
+                    label = { Text(if (btEnabled) stringResource(R.string.bluetooth_on) else stringResource(R.string.bluetooth_off)) }
                 )
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (!hasPermissions) {
-                    Button(onClick = onRequestPermissions) { Text("Pedir permisos") }
+                    Button(onClick = onRequestPermissions) { Text(stringResource(R.string.request_permissions)) }
                 }
                 if (!btEnabled) {
                     Button(onClick = onEnableBluetooth) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Activar Bluetooth")
+                        Text(stringResource(R.string.activate_bluetooth))
                     }
                 }
                 Button(onClick = onToggleScan, enabled = hasPermissions && btEnabled) {
-                    Text(if (scanning) "Parar scan" else "Empezar scan")
+                    Text(if (scanning) stringResource(R.string.stop_scan) else stringResource(R.string.start_scan))
                 }
             }
             
             Text(
-                text = "Toca un dispositivo para conectarte y ver sus valores en tiempo real.",
+                text = stringResource(R.string.scanner_hint),
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -203,12 +205,12 @@ private fun DevicesList(
     Card {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(
-                "Periféricos detectados (${devices.size})",
+                stringResource(R.string.detected_peripherals, devices.size),
                 style = MaterialTheme.typography.titleMedium
             )
 
             if (devices.isEmpty()) {
-                Text("No hay dispositivos todavía. Asegúrate de que el otro móvil está emulando un perfil.")
+                Text(stringResource(R.string.no_devices_found))
                 return@Column
             }
 
@@ -236,15 +238,13 @@ private fun DeviceRow(
     currentValue: String?, 
     onClick: () -> Unit
 ) {
-    val deviceType = remember(d.serviceUuids) {
-        when {
-            d.serviceUuids.any { it.toString().contains("1809", ignoreCase = true) } -> "Termómetro"
-            d.serviceUuids.any { it.toString().contains("180D", ignoreCase = true) } -> "Ritmo Cardíaco"
-            d.serviceUuids.any { it.toString().contains("1808", ignoreCase = true) } -> "Glucómetro"
-            d.serviceUuids.any { it.toString().contains("1810", ignoreCase = true) } -> "Tensiómetro"
-            d.serviceUuids.any { it.toString().contains("1822", ignoreCase = true) } -> "Oxímetro"
-            else -> "Dispositivo Desconocido"
-        }
+    val deviceType = when {
+        d.serviceUuids.any { it.toString().contains("1809", ignoreCase = true) } -> stringResource(R.string.thermometer)
+        d.serviceUuids.any { it.toString().contains("180D", ignoreCase = true) } -> stringResource(R.string.heart_rate)
+        d.serviceUuids.any { it.toString().contains("1808", ignoreCase = true) } -> stringResource(R.string.glucose_meter)
+        d.serviceUuids.any { it.toString().contains("1810", ignoreCase = true) } -> stringResource(R.string.blood_pressure)
+        d.serviceUuids.any { it.toString().contains("1822", ignoreCase = true) } -> stringResource(R.string.pulse_oximeter)
+        else -> stringResource(R.string.device_unknown)
     }
 
     val cardColors = if (isConnected) {
@@ -257,23 +257,23 @@ private fun DeviceRow(
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
-                    text = d.name ?: "Sin nombre",
+                    text = d.name ?: stringResource(R.string.no_name),
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Badge { Text(deviceType) }
             }
-            Text("MAC: ${d.address}", style = MaterialTheme.typography.bodySmall)
-            Text("RSSI: ${d.rssi} dBm", style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.mac_label, d.address), style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.rssi_label, d.rssi), style = MaterialTheme.typography.bodySmall)
             
             if (isConnected) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = currentValue ?: "Esperando datos...",
+                    text = currentValue ?: stringResource(R.string.waiting_data),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
             } else if (currentValue != null) {
-                Text("Último valor: $currentValue", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.last_value_label, currentValue), style = MaterialTheme.typography.bodySmall)
             }
         }
     }

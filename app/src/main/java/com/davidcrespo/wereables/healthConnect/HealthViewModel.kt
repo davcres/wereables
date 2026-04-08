@@ -3,6 +3,7 @@ package com.davidcrespo.wereables.healthConnect
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.davidcrespo.wereables.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ class HealthViewModel(app: Application) : AndroidViewModel(app) {
             }.onFailure { e ->
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Error leyendo Health Connect"
+                    error = e.message ?: getApplication<Application>().getString(R.string.hc_read_error)
                 )
             }
         }

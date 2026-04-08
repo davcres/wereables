@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.davidcrespo.wereables.ble.scanner.BleScanViewModel
 import com.davidcrespo.wereables.ble.scanner.ThermometerBleScanScreen
 import com.davidcrespo.wereables.ble.emulator.ThermometerBleServerScreen
@@ -47,20 +48,20 @@ class MainActivity : ComponentActivity() {
                             NavigationBarItem(
                                 selected = selectedScreen == 0,
                                 onClick = { selectedScreen = 0 },
-                                icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Scanner") },
-                                label = { Text("Scanner") }
+                                icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.nav_scanner)) },
+                                label = { Text(stringResource(R.string.nav_scanner)) }
                             )
                             NavigationBarItem(
                                 selected = selectedScreen == 1,
                                 onClick = { selectedScreen = 1 },
-                                icon = { Icon(Icons.Default.Edit, contentDescription = "Peripheral") },
-                                label = { Text("Emulador") }
+                                icon = { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.nav_emulator)) },
+                                label = { Text(stringResource(R.string.nav_emulator)) }
                             )
                             NavigationBarItem(
                                 selected = selectedScreen == 2,
                                 onClick = { selectedScreen = 2 },
-                                icon = { Icon(Icons.Default.Favorite, contentDescription = "Health Connect") },
-                                label = { Text("Health Connect") }
+                                icon = { Icon(Icons.Default.Favorite, contentDescription = stringResource(R.string.nav_health_connect)) },
+                                label = { Text(stringResource(R.string.nav_health_connect)) }
                             )
                         }
                     }

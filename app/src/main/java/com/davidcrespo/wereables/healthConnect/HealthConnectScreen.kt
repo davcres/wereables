@@ -24,10 +24,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.health.connect.client.PermissionController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.davidcrespo.wereables.R
 import com.davidcrespo.wereables.healthConnect.models.HealthConnectAvailability
 import com.davidcrespo.wereables.healthConnect.models.HeartRateLatestResult
 import com.davidcrespo.wereables.healthConnect.models.StepsTodayResult
@@ -57,7 +59,7 @@ fun HealthConnectScreen(vm: HealthViewModel) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Health Connect Demo") }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.health_connect_demo)) }) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -83,7 +85,7 @@ fun HealthConnectScreen(vm: HealthViewModel) {
             }
 
             state.error?.let { msg ->
-                AssistChip(onClick = {}, label = { Text("Error: $msg") })
+                AssistChip(onClick = {}, label = { Text(stringResource(R.string.error_prefix, msg)) })
             }
 
             DashboardCard(
@@ -103,18 +105,18 @@ private fun AvailabilityCard(
 ) {
     Card {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Disponibilidad", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.availability), style = MaterialTheme.typography.titleMedium)
 
             val text = when (availability) {
-                HealthConnectAvailability.Available -> "Health Connect disponible"
-                HealthConnectAvailability.ProviderUpdateRequired -> "Requiere instalar/actualizar Health Connect"
-                HealthConnectAvailability.Unavailable -> "Health Connect no disponible en este dispositivo"
+                HealthConnectAvailability.Available -> stringResource(R.string.hc_available)
+                HealthConnectAvailability.ProviderUpdateRequired -> stringResource(R.string.hc_update_required)
+                HealthConnectAvailability.Unavailable -> stringResource(R.string.hc_unavailable)
             }
             Text(text)
 
             if (availability is HealthConnectAvailability.ProviderUpdateRequired) {
                 Button(onClick = onOpenHealthConnect) {
-                    Text("Abrir / Instalar Health Connect")
+                    Text(stringResource(R.string.open_install_hc))
                 }
             }
         }
@@ -128,12 +130,12 @@ private fun PermissionsCard(
 ) {
     Card {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Permisos", style = MaterialTheme.typography.titleMedium)
-            Text(if (hasPermissions) "Permisos concedidos" else "Faltan permisos")
+            Text(stringResource(R.string.permissions), style = MaterialTheme.typography.titleMedium)
+            Text(if (hasPermissions) stringResource(R.string.permissions_ok) else stringResource(R.string.missing_permissions))
 
             if (!hasPermissions) {
                 Button(onClick = onRequestPermissions) {
-                    Text("Conceder permisos")
+                    Text(stringResource(R.string.grant_permissions))
                 }
             }
         }
@@ -150,28 +152,30 @@ private fun DashboardCard(
     Card {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Dashboard", style = MaterialTheme.typography.titleMedium)
-                TextButton(onClick = onRefresh, enabled = enabled) { Text("Refrescar") }
+                Text(stringResource(R.string.dashboard), style = MaterialTheme.typography.titleMedium)
+                TextButton(onClick = onRefresh, enabled = enabled) { Text(stringResource(R.string.refresh)) }
             }
 
             if (!enabled) {
-                Text("Concede permisos y asegúrate de que Health Connect esté disponible.")
+                Text(stringResource(R.string.hc_dashboard_hint))
                 return@Column
             }
 
-            Text("Pasos hoy: ${steps?.totalSteps ?: "—"}")
+            Text(stringResource(R.string.steps_today, steps?.totalSteps ?: "—"))
             steps?.dataOrigins?.takeIf { it.isNotEmpty() }?.let { origins ->
-                Text("Fuentes pasos: " + origins.joinToString { it.packageName })
+                Text(stringResource(R.string.steps_sources, origins.joinToString { it.packageName }))
             }
 
             val formatter = remember {
                 DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault())
             }
             Text(
-                "Última FC: " + (hr?.let { "${it.sample.bpm} bpm (${formatter.format(it.sample.time)})" } ?: "—")
+                hr?.let { 
+                    stringResource(R.string.latest_hr_format, it.sample.bpm.toString(), formatter.format(it.sample.time))
+                } ?: stringResource(R.string.latest_hr_format, "—", "—")
             )
             hr?.dataOrigin?.let { origin ->
-                Text("Fuente FC: ${origin.packageName}")
+                Text(stringResource(R.string.hr_source, origin.packageName))
             }
         }
     }
