@@ -22,11 +22,11 @@ secrets {
 }
 
 android {
-    namespace = "com.davidcrespo.wereables"
+    namespace = "com.davidcrespo.ble"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.davidcrespo.wereables"
+        applicationId = "com.davidcrespo.ble"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
