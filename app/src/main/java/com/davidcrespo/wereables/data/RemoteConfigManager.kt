@@ -1,9 +1,11 @@
 package com.davidcrespo.wereables.data
 
+import com.davidcrespo.wereables.BuildConfig
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.davidcrespo.wereables.R
 
 class RemoteConfigManager {
 
@@ -11,12 +13,12 @@ class RemoteConfigManager {
 
     init {
         val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 3600 // 1 hora en producción
+            minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0 else 3600
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
 
-        // Opcional: Valores por defecto locales
-        // remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+        // Valores por defecto locales
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
     }
 
     fun fetchAndActivate(onComplete: (Boolean) -> Unit) {

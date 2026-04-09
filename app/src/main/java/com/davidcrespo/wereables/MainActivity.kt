@@ -1,6 +1,5 @@
 package com.davidcrespo.wereables
 
-import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -29,6 +28,13 @@ import com.davidcrespo.wereables.ble.emulator.ThermometerBleServerScreen
 import com.davidcrespo.wereables.healthConnect.HealthConnectScreen
 import com.davidcrespo.wereables.healthConnect.HealthViewModel
 import com.davidcrespo.wereables.ui.theme.WereablesTheme
+import com.google.android.gms.ads.MobileAds
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.davidcrespo.wereables.adMob.BannerAd
+import com.davidcrespo.wereables.adMob.showInterstitialAd
+import android.os.Bundle
 
 class MainActivity : ComponentActivity() {
 
@@ -39,34 +45,63 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        MobileAds.initialize(this) {}
+
         enableEdgeToEdge()
         setContent {
             WereablesTheme {
+                val context = LocalContext.current
                 var selectedScreen by remember { mutableStateOf(0) }
                 // Obtenemos el estado de Remote Config aunque por ahora solo lo recuperamos al inicio
                 val isConfigReady by mainViewModel.isConfigReady.collectAsStateWithLifecycle()
 
+                LaunchedEffect(isConfigReady) {
+                    if (isConfigReady && mainViewModel.isFullScreenAdsEnabled()) {
+                        showInterstitialAd(context)
+                    }
+                }
+
                 Scaffold(
                     bottomBar = {
-                        NavigationBar {
-                            NavigationBarItem(
-                                selected = selectedScreen == 0,
-                                onClick = { selectedScreen = 0 },
-                                icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.nav_scanner)) },
-                                label = { Text(stringResource(R.string.nav_scanner)) }
-                            )
-                            NavigationBarItem(
-                                selected = selectedScreen == 1,
-                                onClick = { selectedScreen = 1 },
-                                icon = { Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.nav_emulator)) },
-                                label = { Text(stringResource(R.string.nav_emulator)) }
-                            )
-                            NavigationBarItem(
-                                selected = selectedScreen == 2,
-                                onClick = { selectedScreen = 2 },
-                                icon = { Icon(Icons.Default.Favorite, contentDescription = stringResource(R.string.nav_health_connect)) },
-                                label = { Text(stringResource(R.string.nav_health_connect)) }
-                            )
+                        Column {
+                            if (isConfigReady && mainViewModel.isBannerEnabled()) {
+                                BannerAd()
+                            }
+                            NavigationBar {
+                                NavigationBarItem(
+                                    selected = selectedScreen == 0,
+                                    onClick = { selectedScreen = 0 },
+                                    icon = {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.List,
+                                            contentDescription = stringResource(R.string.nav_scanner)
+                                        )
+                                    },
+                                    label = { Text(stringResource(R.string.nav_scanner)) }
+                                )
+                                NavigationBarItem(
+                                    selected = selectedScreen == 1,
+                                    onClick = { selectedScreen = 1 },
+                                    icon = {
+                                        Icon(
+                                            Icons.Default.Edit,
+                                            contentDescription = stringResource(R.string.nav_emulator)
+                                        )
+                                    },
+                                    label = { Text(stringResource(R.string.nav_emulator)) }
+                                )
+                                NavigationBarItem(
+                                    selected = selectedScreen == 2,
+                                    onClick = { selectedScreen = 2 },
+                                    icon = {
+                                        Icon(
+                                            Icons.Default.Favorite,
+                                            contentDescription = stringResource(R.string.nav_health_connect)
+                                        )
+                                    },
+                                    label = { Text(stringResource(R.string.nav_health_connect)) }
+                                )
+                            }
                         }
                     }
                 ) { padding ->

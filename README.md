@@ -1,3 +1,8 @@
+Start the app
+# 1. Add google.services.json
+# 2. Add secret.properties with values of local.defaults.properties
+
+
 Connect Wereables documentation
 ================
 # Health Connect Steps
