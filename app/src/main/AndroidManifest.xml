@@ -5,10 +5,10 @@
     <!-- INTERNET -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- HEALTH CONNECT -->
+    <!-- HEALTH CONNECT
     <uses-permission android:name="android.permission.health.READ_STEPS" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-
+    -->
     <!-- BLUETOOTH -->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
