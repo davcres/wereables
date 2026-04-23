@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     label = { Text(stringResource(R.string.nav_emulator)) }
                                 )
-                                NavigationBarItem(
+                                /*NavigationBarItem(
                                     selected = selectedScreen == 2,
                                     onClick = { selectedScreen = 2 },
                                     icon = {
@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                     },
                                     label = { Text(stringResource(R.string.nav_health_connect)) }
-                                )
+                                )*/
                             }
                         }
                     }
